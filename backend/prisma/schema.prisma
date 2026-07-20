@@ -25,4 +25,16 @@ model Node {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  edgesFrom TopologyEdge[] @relation("EdgeSource")
+  edgesTo   TopologyEdge[] @relation("EdgeTarget")
+}
+
+model TopologyEdge {
+  id          String        @id @default(uuid())
+  sourceId    String
+  targetId    String
+  
+  source      Node @relation("EdgeSource", fields: [sourceId], references: [id], onDelete: Cascade)
+  target      Node @relation("EdgeTarget", fields: [targetId], references: [id], onDelete: Cascade)
 }

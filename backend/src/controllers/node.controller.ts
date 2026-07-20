@@ -33,8 +33,16 @@ export class NodeController {
 
   async create(req: Request, res: Response) {
     try {
-      const node = await nodeService.createNode(req.body);
-      res.status(201).json(node);
+      const { metadata, ...rest } = req.body;
+      const dataToSave = {
+        ...rest,
+        metadata: typeof metadata === 'object' ? JSON.stringify(metadata) : (metadata || '{}')
+      };
+      const node = await nodeService.createNode(dataToSave);
+      res.status(201).json({
+        ...node,
+        metadata: JSON.parse(node.metadata)
+      });
     } catch (error) {
       res.status(400).json({ error: 'Erro ao criar o node' });
     }
@@ -42,8 +50,16 @@ export class NodeController {
 
   async update(req: Request, res: Response) {
     try {
-      const node = await nodeService.updateNode(req.params.id, req.body);
-      res.json(node);
+      const { metadata, ...rest } = req.body;
+      const dataToSave = {
+        ...rest,
+        ...(metadata !== undefined && { metadata: typeof metadata === 'object' ? JSON.stringify(metadata) : metadata })
+      };
+      const node = await nodeService.updateNode(req.params.id, dataToSave);
+      res.json({
+        ...node,
+        metadata: JSON.parse(node.metadata)
+      });
     } catch (error) {
       res.status(400).json({ error: 'Erro ao atualizar o node' });
     }
