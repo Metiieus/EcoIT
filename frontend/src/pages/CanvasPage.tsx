@@ -5,11 +5,9 @@ import {
   Background,
   useNodesState,
   useEdgesState,
-  addEdge,
-  Connection,
-  Edge,
-  Node as ReactFlowNode
+  addEdge
 } from '@xyflow/react';
+import type { Connection, Edge, Node as ReactFlowNode } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { api } from '../services/api';
 
