@@ -5,6 +5,7 @@ const router = Router();
 
 router.get('/', nodeController.getAll);
 router.get('/:id', nodeController.getById);
+router.get('/:id/secret/:key', nodeController.getSecret);
 router.post('/', nodeController.create);
 router.put('/:id', nodeController.update);
 router.delete('/:id', nodeController.delete);

@@ -149,11 +149,11 @@ export function CanvasPage() {
   const handleAddNode = async () => {
     try {
       const payload = {
-        name: 'Novo Item',
+        name: 'Novo Servidor',
         category: 'infra',
         positionX: Math.random() * 300 + 50,
         positionY: Math.random() * 300 + 50,
-        metadata: { status: "pendente" }
+        metadata: { ip: '', uptime: '', status: 'pendente' }
       };
       const res = await api.post<BackendNode>('/nodes', payload);
       const newNode: ReactFlowNode = {
