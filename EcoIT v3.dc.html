@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&amp;display=swap">
+  <style>
+    html, body { margin: 0; height: 100%; overflow: hidden; background: #0a0e13; }
+    a { color: #22c55e; } a:hover { color: #4ade80; }
+    input, select { outline: none; }
+    button:focus-visible, input:focus-visible { outline: 2px solid #22c55e; outline-offset: 2px; }
+    ::selection { background: rgba(34,197,94,0.35); }
+    @keyframes ecoPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+  </style>
+</helmet>
+<div style="height: 100vh; display: flex; flex-direction: column; font-family: 'Figtree', system-ui, sans-serif; color: #e6edf3; background: #0a0e13; overflow: hidden;">
+  <div style="flex: 1; display: flex; min-height: 0;">
+    <aside style="width: 240px; flex: none; background: #0d1218; border-right: 1px solid #1c242e; display: flex; flex-direction: column; padding: 16px 12px; box-sizing: border-box; gap: 4px;">
+      <div style="display: flex; align-items: center; gap: 10px; padding: 2px 8px 16px;">
+        <div style="width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, #22c55e, #15803d); display: flex; align-items: center; justify-content: center; transform: rotate(0deg);">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style="stroke: #06130b; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round;"><path d="M12 3l9 9-9 9-9-9 9-9zm0 5l4 4-4 4-4-4 4-4z"></path></svg>
+        </div>
+        <div style="font-weight: 800; font-size: 19px;">Eco<span style="color: #22c55e;">IT</span></div>
+      </div>
+      <nav style="display: flex; flex-direction: column; gap: 3px;">
+        <sc-for list="{{ navBtns }}" as="b" hint-placeholder-count="5">
+          <button data-view="{{ b.view }}" onClick="{{ setView }}" style="display: flex; align-items: center; gap: 11px; padding: 10px 13px; border: 1px solid {{ b.border }}; border-radius: 11px; background: {{ b.bg }}; color: {{ b.fg }}; font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer; text-align: left;" style-hover="background: #141b23;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none;"><path d="{{ b.icon }}"></path></svg>
+            <span style="flex: 1;">{{ b.label }}</span>
+            <sc-if value="{{ b.badge }}" hint-placeholder-val="{{ false }}">
+              <span style="font-size: 10px; font-weight: 800; background: #ef4444; color: #fff; border-radius: 999px; padding: 1px 7px;">{{ b.badgeN }}</span>
+            </sc-if>
+          </button>
+        </sc-for>
+      </nav>
+      <div style="flex: 1;"></div>
+      <div style="display: flex; align-items: center; gap: 10px; border: 1px solid #1c242e; border-radius: 14px; padding: 10px 12px; background: #10161d;">
+        <div style="width: 34px; height: 34px; border-radius: 999px; background: #182029; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; color: #22c55e;">TI</div>
+        <div style="flex: 1;">
+          <div style="font-size: 13px; font-weight: 700;">Admin TI</div>
+          <div style="font-size: 11px; color: #22c55e; display: flex; align-items: center; gap: 5px;"><span style="width: 6px; height: 6px; border-radius: 999px; background: #22c55e;"></span>Online</div>
+        </div>
+        <span style="color: #7d8896;">▾</span>
+      </div>
+    </aside>
+
+    <div style="flex: 1; display: flex; flex-direction: column; min-width: 0;">
+      <header style="height: 62px; flex: none; background: #0d1218; border-bottom: 1px solid #1c242e; display: flex; align-items: center; gap: 14px; padding: 0 20px;">
+        <div>
+          <div style="font-size: 17px; font-weight: 800;">{{ viewTitle }}</div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: #7d8896;"><span style="width: 7px; height: 7px; border-radius: 999px; background: #22c55e;"></span>Salvo agora</div>
+        <div style="flex: 1;"></div>
+        <div style="width: 320px; display: flex; align-items: center; gap: 10px; background: #10161d; border: 1px solid #1c242e; border-radius: 11px; padding: 8px 13px;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" style="stroke: #7d8896; stroke-width: 2; stroke-linecap: round; flex: none;"><path d="M11 4a7 7 0 100 14 7 7 0 000-14zm10 17l-5-5"></path></svg>
+          <input value="{{ q }}" onChange="{{ onSearch }}" placeholder="Buscar ativo…" style="flex: 1; border: none; background: transparent; font-family: inherit; font-size: 13px; color: #e6edf3;">
+        </div>
+        <button onClick="{{ goAlerts }}" aria-label="Alertas" style="position: relative; width: 38px; height: 38px; border: 1px solid #1c242e; border-radius: 11px; background: #10161d; cursor: pointer; display: flex; align-items: center; justify-content: center;" style-hover="background: #141b23;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="stroke: #b9c2cc; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9zm-4 13a2 2 0 01-4 0"></path></svg>
+          <sc-if value="{{ hasAlerts }}" hint-placeholder-val="{{ false }}">
+            <span style="position: absolute; top: -5px; right: -5px; font-size: 9.5px; font-weight: 800; background: #ef4444; color: #fff; border-radius: 999px; padding: 1px 6px;">{{ ovAlerts }}</span>
+          </sc-if>
+        </button>
+        <button onClick="{{ openAdd }}" style="display: flex; align-items: center; gap: 8px; padding: 10px 18px; border: none; border-radius: 11px; background: #22c55e; color: #06130b; font-family: inherit; font-size: 13px; font-weight: 800; cursor: pointer;" style-hover="background: #4ade80;">+ Novo Ativo</button>
+      </header>
+
+      <sc-if value="{{ isCanvas }}" hint-placeholder-val="{{ true }}">
+        <div style="flex: 1; position: relative; overflow: hidden;">
+          <div ref="{{ viewportRef }}" onMouseDown="{{ onCanvasDown }}" onWheel="{{ onWheel }}" style="position: absolute; inset: 0; cursor: grab; background-color: #0a0e13; background-image: radial-gradient(#1a222c 1.2px, transparent 1.2px); background-size: 26px 26px;">
+            <div style="position: absolute; left: 0; top: 0; width: 2000px; height: 1400px; transform: {{ worldTransform }}; transform-origin: 0 0;">
+              <svg width="2000" height="1400" viewBox="0 0 2000 1400" style="position: absolute; left: 0; top: 0; pointer-events: none;">
+                <sc-for list="{{ spokes }}" as="s" hint-placeholder-count="8">
+                  <path d="{{ s.d }}" style="fill: none; stroke: #22c55e; stroke-width: 2; opacity: 0.35;"></path>
+                </sc-for>
+                <sc-for list="{{ structEdges }}" as="se" hint-placeholder-count="12">
+                  <path d="{{ se.d }}" style="fill: none; stroke: {{ se.color }}; stroke-width: 1.5; opacity: 0.45;"></path>
+                </sc-for>
+                <sc-for list="{{ depEdges }}" as="de" hint-placeholder-count="8">
+                  <path d="{{ de.d }}" style="fill: none; stroke: #22c55e; stroke-width: 2; opacity: 0.75;"></path>
+                </sc-for>
+                <sc-for list="{{ depDots }}" as="dd" hint-placeholder-count="8">
+                  <circle cx="{{ dd.x }}" cy="{{ dd.y }}" r="8" style="fill: #22c55e; opacity: 0.16;"></circle>
+                </sc-for>
+                <sc-for list="{{ depDots }}" as="dd2" hint-placeholder-count="8">
+                  <circle cx="{{ dd2.x }}" cy="{{ dd2.y }}" r="3" style="fill: #22c55e;"></circle>
+                </sc-for>
+              </svg>
+              <div style="position: absolute; left: 880px; top: 580px; width: 240px; height: 240px; border-radius: 999px; background: radial-gradient(circle at 50% 40%, #14231a, #0d1419 70%); border: 2px solid #22c55e; box-shadow: 0 0 70px rgba(34,197,94,0.30), inset 0 0 40px rgba(34,197,94,0.08); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 10px; box-sizing: border-box; padding: 24px;">
+                <svg width="42" height="42" viewBox="0 0 24 24" fill="none" style="stroke: #22c55e; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;"><path d="M12 3l9 9-9 9-9-9 9-9zm0 5l4 4-4 4-4-4 4-4z"></path></svg>
+                <div style="font-size: 15px; font-weight: 800; letter-spacing: 0.12em; line-height: 1.5;">PLANO<br>ESTRATÉGICO<br>CENTRAL</div>
+              </div>
+              <sc-for list="{{ vPillars }}" as="p" hint-placeholder-count="8">
+                <div style="position: absolute; left: {{ p.lx }}px; top: {{ p.ly }}px; width: 198px; background: rgba(16,22,29,0.92); border: 1.5px solid {{ p.color }}; border-radius: 14px; box-shadow: 0 0 26px {{ p.glow }}; box-sizing: border-box;">
+                  <div style="display: flex; align-items: center; gap: 10px; padding: 12px 14px 8px;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style="stroke: {{ p.color }}; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none;"><path d="{{ p.icon }}"></path></svg>
+                    <div>
+                      <div style="font-size: 10px; font-weight: 800; color: {{ p.color }};">{{ p.num }}</div>
+                      <div style="font-size: 11.5px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; line-height: 1.25;">{{ p.name }}</div>
+                    </div>
+                  </div>
+                  <div style="padding: 0 14px 10px; font-size: 11px; color: #7d8896;">{{ p.count }} ativos</div>
+                  <div style="border-top: 1px solid #1c242e; padding: 8px 14px; display: flex; gap: 14px; font-size: 11.5px; font-weight: 700;">
+                    <span style="display: flex; align-items: center; gap: 5px;"><span style="width: 8px; height: 8px; border-radius: 999px; background: #22c55e;"></span>{{ p.nOn }}</span>
+                    <span style="display: flex; align-items: center; gap: 5px;"><span style="width: 8px; height: 8px; border-radius: 999px; background: #f59e0b;"></span>{{ p.nMan }}</span>
+                    <span style="display: flex; align-items: center; gap: 5px;"><span style="width: 8px; height: 8px; border-radius: 999px; background: #ef4444;"></span>{{ p.nOff }}</span>
+                  </div>
+                </div>
+              </sc-for>
+              <sc-for list="{{ vNodes }}" as="n" hint-placeholder-count="14">
+                <div data-id="{{ n.id }}" onMouseDown="{{ onNodeDown }}" title="{{ n.name }}" style="position: absolute; left: {{ n.lx }}px; top: {{ n.ly }}px; width: 54px; cursor: grab; user-select: none; opacity: {{ n.opacity }};">
+                  <div style="width: 54px; height: 54px; border-radius: 999px; background: #10161d; border: 2px solid {{ n.ringColor }}; box-shadow: {{ n.shadow }}; display: flex; align-items: center; justify-content: center; box-sizing: border-box; position: relative;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style="stroke: {{ n.iconColor }}; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;"><path d="{{ n.iconD }}"></path></svg>
+                    <span style="position: absolute; right: -2px; bottom: -2px; width: 13px; height: 13px; border-radius: 999px; background: {{ n.statusColor }}; border: 2.5px solid #0a0e13; animation: {{ n.dotAnim }};"></span>
+                  </div>
+                  <div style="width: 110px; margin: 5px 0 0 -28px; text-align: center; font-size: 10px; font-weight: 600; color: #b9c2cc; line-height: 1.3;">{{ n.name }}</div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+          <div style="position: absolute; top: 14px; left: 16px; display: flex; background: #10161d; border: 1px solid #1c242e; border-radius: 12px; padding: 4px; gap: 2px; box-shadow: 0 4px 14px rgba(0,0,0,0.4);">
+            <button onClick="{{ toggleConnect }}" title="Traçar conexão entre ativos" style="border: none; border-radius: 9px; padding: 8px 14px; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer; background: {{ connectBg }}; color: {{ connectFg }};">⤳ Conectar</button>
+            <button onClick="{{ fitView }}" style="border: none; border-radius: 9px; padding: 8px 14px; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer; background: transparent; color: #b9c2cc;" style-hover="background: #182029;">Ajustar</button>
+          </div>
+          <sc-if value="{{ connectMode }}" hint-placeholder-val="{{ false }}">
+            <div style="position: absolute; top: 66px; left: 50%; transform: translateX(-50%); background: #22c55e; color: #06130b; border-radius: 999px; padding: 9px 20px; font-size: 12.5px; font-weight: 800; box-shadow: 0 6px 22px rgba(34,197,94,0.4);">{{ connectHint }} · Esc para cancelar</div>
+          </sc-if>
+          <div style="position: absolute; right: 16px; bottom: 14px; display: flex; align-items: flex-end; gap: 10px;">
+            <div style="display: flex; flex-direction: column; gap: 6px; align-items: center;">
+              <button onClick="{{ zoomIn }}" aria-label="Ampliar zoom" style="width: 32px; height: 32px; border: 1px solid #1c242e; border-radius: 9px; background: #10161d; color: #e6edf3; font-size: 15px; font-weight: 700; cursor: pointer;" style-hover="background: #182029;">+</button>
+              <span style="font-size: 11px; font-weight: 800; color: #7d8896;">{{ zoomPct }}</span>
+              <button onClick="{{ zoomOut }}" aria-label="Reduzir zoom" style="width: 32px; height: 32px; border: 1px solid #1c242e; border-radius: 9px; background: #10161d; color: #e6edf3; font-size: 15px; font-weight: 700; cursor: pointer;" style-hover="background: #182029;">−</button>
+            </div>
+            <div style="background: #10161d; border: 1px solid #1c242e; border-radius: 12px; padding: 8px; box-shadow: 0 4px 14px rgba(0,0,0,0.4);">
+              <svg width="168" height="118" viewBox="0 0 168 118">
+                <rect x="0" y="0" width="168" height="118" rx="8" style="fill: #0a0e13;"></rect>
+                <sc-for list="{{ miniPillars }}" as="mp" hint-placeholder-count="8">
+                  <circle cx="{{ mp.x }}" cy="{{ mp.y }}" r="4" style="fill: {{ mp.color }}; opacity: 0.9;"></circle>
+                </sc-for>
+                <sc-for list="{{ miniNodes }}" as="mn" hint-placeholder-count="14">
+                  <circle cx="{{ mn.x }}" cy="{{ mn.y }}" r="2" style="fill: {{ mn.color }};"></circle>
+                </sc-for>
+                <circle cx="84" cy="59" r="6" style="fill: none; stroke: #22c55e; stroke-width: 1.5;"></circle>
+              </svg>
+            </div>
+          </div>
+          <sc-if value="{{ hasSel }}" hint-placeholder-val="{{ false }}">
+            <aside style="position: absolute; right: 16px; top: 14px; bottom: 64px; width: 360px; max-width: calc(100vw - 320px); background: #0d1218; border: 1px solid #1c242e; border-radius: 16px; box-shadow: 0 18px 50px rgba(0,0,0,0.55); display: flex; flex-direction: column; overflow: hidden;">
+              <div style="padding: 18px 20px 0;">
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                  <div style="font-size: 13px; font-weight: 800; color: #b9c2cc;">Ativo Selecionado</div>
+                  <button onClick="{{ closePanel }}" aria-label="Fechar painel" style="border: none; background: transparent; font-size: 19px; color: #7d8896; cursor: pointer; padding: 2px 7px; border-radius: 8px;" style-hover="background: #182029;">×</button>
+                </div>
+                <div style="display: flex; align-items: center; gap: 14px; margin-top: 14px;">
+                  <div style="width: 62px; height: 62px; border-radius: 999px; background: #10161d; border: 2px solid {{ selRing }}; display: flex; align-items: center; justify-content: center; flex: none;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="stroke: {{ selRing }}; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;"><path d="{{ selIconD }}"></path></svg>
+                  </div>
+                  <div>
+                    <span style="display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: {{ selStatusColor }}; background: {{ selStatusBg }}; border-radius: 999px; padding: 3px 10px;"><span style="width: 6px; height: 6px; border-radius: 999px; background: {{ selStatusColor }};"></span>{{ selStatusLabel }}</span>
+                    <h2 style="font-size: 19px; font-weight: 800; margin: 6px 0 2px;">{{ selName }}</h2>
+                    <div style="font-size: 12px; color: #7d8896;">{{ selSub }}</div>
+                    <span style="display: inline-block; font-size: 10.5px; font-weight: 700; color: {{ selRing }}; border: 1px solid {{ selRing }}; border-radius: 999px; padding: 2px 10px; margin-top: 7px;">{{ selPillarName }}</span>
+                  </div>
+                </div>
+                <div style="display: flex; gap: 2px; margin-top: 16px; border-bottom: 1px solid #1c242e;">
+                  <sc-for list="{{ panelTabs }}" as="pt" hint-placeholder-count="4">
+                    <button data-tab="{{ pt.tab }}" onClick="{{ setTab }}" style="border: none; background: transparent; font-family: inherit; font-size: 12px; font-weight: 700; padding: 9px 11px; cursor: pointer; color: {{ pt.fg }}; border-bottom: 2px solid {{ pt.line }}; margin-bottom: -1px;">{{ pt.label }}</button>
+                  </sc-for>
+                </div>
+              </div>
+              <div style="flex: 1; overflow: auto; padding: 16px 20px 18px; display: flex; flex-direction: column; gap: 18px;">
+                <sc-if value="{{ tabInfo }}" hint-placeholder-val="{{ true }}">
+                  <div>
+                    <div style="font-size: 10.5px; letter-spacing: 0.12em; text-transform: uppercase; color: #7d8896; font-weight: 800; margin-bottom: 10px;">Informações gerais</div>
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                      <sc-for list="{{ selMeta }}" as="mr" hint-placeholder-count="5">
+                        <div style="display: flex; justify-content: space-between; gap: 12px; font-size: 13px;">
+                          <span style="color: #7d8896;">{{ mr.k }}</span>
+                          <span style="font-weight: 700; text-align: right;">{{ mr.v }}</span>
+                        </div>
+                      </sc-for>
+                    </div>
+                  </div>
+                  <div>
+                    <div style="font-size: 10.5px; letter-spacing: 0.12em; text-transform: uppercase; color: #7d8896; font-weight: 800; margin-bottom: 10px;">Status</div>
+                    <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                      <sc-for list="{{ selStatusOpts }}" as="so" hint-placeholder-count="3">
+                        <button data-status="{{ so.status }}" onClick="{{ setStatus }}" style="border: 1px solid {{ so.border }}; border-radius: 999px; padding: 6px 13px; font-family: inherit; font-size: 11.5px; font-weight: 700; cursor: pointer; background: {{ so.bg }}; color: {{ so.fg }};">{{ so.label }}</button>
+                      </sc-for>
+                    </div>
+                  </div>
+                  <div>
+                    <div style="font-size: 10.5px; letter-spacing: 0.12em; text-transform: uppercase; color: #7d8896; font-weight: 800; margin-bottom: 10px;">Ações rápidas</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                      <button onClick="{{ actCreds }}" style="border: 1px solid #1c242e; border-radius: 11px; padding: 10px; background: #10161d; color: #e6edf3; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer;" style-hover="background: #182029;">🔒 Ver Credenciais</button>
+                      <button onClick="{{ actMeta }}" style="border: 1px solid #1c242e; border-radius: 11px; padding: 10px; background: #10161d; color: #e6edf3; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer;" style-hover="background: #182029;">✎ Metadados</button>
+                      <button onClick="{{ actConn }}" style="border: 1px solid #1c242e; border-radius: 11px; padding: 10px; background: #10161d; color: #e6edf3; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer;" style-hover="background: #182029;">⤳ Dependências</button>
+                      <button onClick="{{ actToggleOff }}" style="border: 1px solid rgba(239,68,68,0.4); border-radius: 11px; padding: 10px; background: rgba(239,68,68,0.08); color: #ef4444; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer;" style-hover="background: rgba(239,68,68,0.16);">{{ actOffLabel }}</button>
+                    </div>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ tabMeta }}" hint-placeholder-val="{{ false }}">
+                  <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <sc-for list="{{ selAllMeta }}" as="am" hint-placeholder-count="5">
+                      <div style="display: flex; justify-content: space-between; gap: 12px; font-size: 13px; padding: 9px 13px; border-radius: 10px; background: #10161d;">
+                        <span style="color: #7d8896;">{{ am.k }}</span>
+                        <span style="font-weight: 700; text-align: right;">{{ am.v }}</span>
+                      </div>
+                    </sc-for>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ tabConn }}" hint-placeholder-val="{{ false }}">
+                  <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <sc-for list="{{ selDeps }}" as="dp" hint-placeholder-count="2">
+                      <div style="display: flex; align-items: center; gap: 10px; font-size: 13px; padding: 10px 13px; border-radius: 11px; background: #10161d;">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style="stroke: #22c55e; stroke-width: 2; stroke-linecap: round; flex: none;"><path d="M7 17L17 7M17 7H9m8 0v8"></path></svg>
+                        <span><span style="color: #7d8896;">{{ dp.dir }}</span> <span style="font-weight: 700;">{{ dp.other }}</span></span>
+                      </div>
+                    </sc-for>
+                    <sc-if value="{{ selNoDeps }}" hint-placeholder-val="{{ false }}">
+                      <p style="margin: 0; font-size: 13px; color: #7d8896;">Nenhuma conexão traçada para este ativo.</p>
+                    </sc-if>
+                    <button onClick="{{ connectFromSel }}" style="margin-top: 6px; border: 1px dashed #22c55e; border-radius: 11px; padding: 10px; background: rgba(34,197,94,0.07); color: #22c55e; font-family: inherit; font-size: 12.5px; font-weight: 700; cursor: pointer;" style-hover="background: rgba(34,197,94,0.14);">+ Traçar conexão a partir deste ativo</button>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ tabCreds }}" hint-placeholder-val="{{ false }}">
+                  <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <sc-for list="{{ selCreds }}" as="cr" hint-placeholder-count="1">
+                      <div style="border: 1px solid #1c242e; border-radius: 12px; padding: 12px 14px; background: #10161d;">
+                        <div style="font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: #7d8896; font-weight: 800;">Utilizador</div>
+                        <div style="font-size: 13px; font-weight: 700; font-family: ui-monospace, monospace; margin: 3px 0 10px;">{{ cr.user }}</div>
+                        <div style="font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: #7d8896; font-weight: 800;">Senha</div>
+                        <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 4px;">
+                          <sc-if value="{{ cr.revealed }}" hint-placeholder-val="{{ false }}">
+                            <span style="font-size: 13px; font-family: ui-monospace, monospace; background: rgba(34,197,94,0.12); color: #4ade80; padding: 3px 10px; border-radius: 999px;">{{ cr.secret }}</span>
+                            <span style="font-size: 11px; font-weight: 800; color: #ef4444;">{{ cr.secs }}s</span>
+                          </sc-if>
+                          <sc-if value="{{ cr.hidden }}" hint-placeholder-val="{{ true }}">
+                            <span style="font-size: 13px; letter-spacing: 0.2em; color: #7d8896;">••••••••••</span>
+                            <button data-cred="{{ cr.id }}" onClick="{{ reveal }}" style="border: 1px solid #1c242e; border-radius: 999px; padding: 5px 13px; background: #0d1218; font-family: inherit; font-size: 11.5px; font-weight: 700; cursor: pointer; color: #e6edf3;" style-hover="background: #182029;">Revelar</button>
+                          </sc-if>
+                        </div>
+                      </div>
+                    </sc-for>
+                    <sc-if value="{{ selNoCreds }}" hint-placeholder-val="{{ false }}">
+                      <p style="margin: 0; font-size: 13px; color: #7d8896;">Nenhuma credencial no cofre para este ativo.</p>
+                    </sc-if>
+                    <p style="margin: 4px 0 0; font-size: 11.5px; color: #7d8896;">Senhas reveladas são destruídas do ecrã após {{ revealSeconds }}s.</p>
+                  </div>
+                </sc-if>
+              </div>
+              <div style="padding: 12px 20px 16px; border-top: 1px solid #1c242e;">
+                <button onClick="{{ removeSel }}" style="width: 100%; border: 1px solid rgba(239,68,68,0.35); border-radius: 11px; padding: 11px; background: transparent; color: #ef4444; font-family: inherit; font-size: 12.5px; font-weight: 700; cursor: pointer;" style-hover="background: rgba(239,68,68,0.1);">Remover ativo do ecossistema</button>
+              </div>
+            </aside>
+          </sc-if>
+          <sc-if value="{{ addOpen }}" hint-placeholder-val="{{ false }}">
+            <div style="position: absolute; inset: 0; background: rgba(4,7,10,0.6); display: flex; align-items: center; justify-content: center; z-index: 20;">
+              <div style="width: 380px; max-width: 90%; background: #0d1218; border: 1px solid #1c242e; border-radius: 16px; box-shadow: 0 24px 70px rgba(0,0,0,0.6); padding: 24px;">
+                <h2 style="font-size: 17px; font-weight: 800; margin: 0 0 16px;">Novo ativo</h2>
+                <div style="display: flex; flex-direction: column; gap: 14px;">
+                  <div style="display: flex; flex-direction: column; gap: 5px;">
+                    <label for="eco-add-name" style="font-size: 12px; font-weight: 700; color: #b9c2cc;">Nome do ativo</label>
+                    <input id="eco-add-name" type="text" ref="{{ nameRef }}" placeholder="Ex.: SRV-HML-02" style="border: 1px solid #1c242e; border-radius: 11px; padding: 10px 14px; font-family: inherit; font-size: 13.5px; background: #10161d; color: #e6edf3;">
+                  </div>
+                  <div style="display: flex; flex-direction: column; gap: 5px;">
+                    <label for="eco-add-type" style="font-size: 12px; font-weight: 700; color: #b9c2cc;">Tipo</label>
+                    <select id="eco-add-type" ref="{{ typeRef }}" style="border: 1px solid #1c242e; border-radius: 11px; padding: 10px 14px; font-family: inherit; font-size: 13.5px; background: #10161d; color: #e6edf3;">
+                      <option>Servidor</option><option>Router</option><option>Firewall</option><option>Sistema</option><option>Serviço</option><option>Contrato</option>
+                    </select>
+                  </div>
+                  <div style="display: flex; flex-direction: column; gap: 5px;">
+                    <label for="eco-add-pillar" style="font-size: 12px; font-weight: 700; color: #b9c2cc;">Pilar</label>
+                    <select id="eco-add-pillar" ref="{{ pillarRef }}" style="border: 1px solid #1c242e; border-radius: 11px; padding: 10px 14px; font-family: inherit; font-size: 13.5px; background: #10161d; color: #e6edf3;">
+                      <sc-for list="{{ pillarOpts }}" as="po" hint-placeholder-count="8">
+                        <option value="{{ po.idx }}">{{ po.name }}</option>
+                      </sc-for>
+                    </select>
+                  </div>
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 22px;">
+                  <button onClick="{{ closeAdd }}" style="border: none; border-radius: 11px; padding: 10px 18px; background: transparent; font-family: inherit; font-size: 13px; font-weight: 700; color: #b9c2cc; cursor: pointer;" style-hover="background: #182029;">Cancelar</button>
+                  <button onClick="{{ submitAdd }}" style="border: none; border-radius: 11px; padding: 10px 20px; background: #22c55e; color: #06130b; font-family: inherit; font-size: 13px; font-weight: 800; cursor: pointer;" style-hover="background: #4ade80;">Adicionar</button>
+                </div>
+              </div>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isAtivos }}" hint-placeholder-val="{{ false }}">
+        <main style="flex: 1; overflow: auto; padding: 24px 26px 40px;">
+          <div style="background: #0d1218; border: 1px solid #1c242e; border-radius: 16px; overflow: hidden;">
+            <div style="display: grid; grid-template-columns: 1.5fr 1.2fr 0.9fr 1fr 110px; gap: 12px; padding: 12px 20px; background: #10161d; border-bottom: 1px solid #1c242e; font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; color: #7d8896; font-weight: 800;">
+              <span>Ativo</span><span>Pilar</span><span>Tipo</span><span>Status</span><span></span>
+            </div>
+            <sc-for list="{{ assetRows }}" as="ar" hint-placeholder-count="10">
+              <div style="display: grid; grid-template-columns: 1.5fr 1.2fr 0.9fr 1fr 110px; gap: 12px; align-items: center; padding: 12px 20px; border-bottom: 1px solid #141b23;">
+                <span style="font-size: 13.5px; font-weight: 700;">{{ ar.name }}</span>
+                <span style="font-size: 12.5px; color: {{ ar.pillarColor }};">{{ ar.pillarName }}</span>
+                <span style="font-size: 12.5px; color: #b9c2cc;">{{ ar.type }}</span>
+                <span style="display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: {{ ar.statusColor }};"><span style="width: 8px; height: 8px; border-radius: 999px; background: {{ ar.statusColor }};"></span>{{ ar.statusLabel }}</span>
+                <button data-id="{{ ar.id }}" onClick="{{ openInCanvas }}" style="border: 1px solid #1c242e; border-radius: 999px; padding: 5px 13px; background: transparent; font-family: inherit; font-size: 11.5px; font-weight: 700; cursor: pointer; color: #22c55e;" style-hover="background: rgba(34,197,94,0.1);">Ver no canvas</button>
+              </div>
+            </sc-for>
+          </div>
+        </main>
+      </sc-if>
+
+      <sc-if value="{{ isConn }}" hint-placeholder-val="{{ false }}">
+        <main style="flex: 1; overflow: auto; padding: 24px 26px 40px;">
+          <div style="display: flex; flex-direction: column; gap: 8px; max-width: 720px;">
+            <sc-for list="{{ connRows }}" as="cn" hint-placeholder-count="8">
+              <div style="display: flex; align-items: center; gap: 14px; background: #0d1218; border: 1px solid #1c242e; border-radius: 13px; padding: 13px 18px;">
+                <span style="font-size: 13.5px; font-weight: 700; flex: 1;">{{ cn.from }}</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style="stroke: #22c55e; stroke-width: 2; stroke-linecap: round; flex: none;"><path d="M5 12h14m-6-6l6 6-6 6"></path></svg>
+                <span style="font-size: 13.5px; font-weight: 700; flex: 1;">{{ cn.to }}</span>
+                <button data-idx="{{ cn.idx }}" onClick="{{ removeEdge }}" aria-label="Remover conexão" style="border: none; background: transparent; color: #7d8896; font-size: 16px; cursor: pointer; padding: 2px 8px; border-radius: 8px;" style-hover="color: #ef4444;">×</button>
+              </div>
+            </sc-for>
+            <sc-if value="{{ noConn }}" hint-placeholder-val="{{ false }}">
+              <p style="font-size: 13.5px; color: #7d8896;">Nenhuma dependência traçada. Use "Conectar" no Canvas Executivo.</p>
+            </sc-if>
+          </div>
+        </main>
+      </sc-if>
+
+      <sc-if value="{{ isVault }}" hint-placeholder-val="{{ false }}">
+        <main style="flex: 1; overflow: auto; padding: 24px 26px 40px;">
+          <p style="margin: 0 0 18px; color: #7d8896; font-size: 13.5px; max-width: 62ch;">Credenciais encriptadas no servidor. Ao revelar, o texto fica visível por {{ revealSeconds }} segundos e é destruído da memória do ecrã em seguida.</p>
+          <div style="background: #0d1218; border: 1px solid #1c242e; border-radius: 16px; max-width: 880px; overflow: hidden;">
+            <div style="display: grid; grid-template-columns: 1.4fr 1fr 1.2fr 120px; gap: 12px; padding: 12px 20px; background: #10161d; border-bottom: 1px solid #1c242e; font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; color: #7d8896; font-weight: 800;">
+              <span>Ativo</span><span>Utilizador</span><span>Senha</span><span></span>
+            </div>
+            <sc-for list="{{ vaultRows }}" as="row" hint-placeholder-count="6">
+              <div style="display: grid; grid-template-columns: 1.4fr 1fr 1.2fr 120px; gap: 12px; align-items: center; padding: 12px 20px; border-bottom: 1px solid #141b23;">
+                <span style="font-size: 13.5px; font-weight: 700;">{{ row.label }}</span>
+                <span style="font-size: 13px; font-family: ui-monospace, monospace; color: #b9c2cc;">{{ row.user }}</span>
+                <span style="font-size: 13px; font-family: ui-monospace, monospace;">
+                  <sc-if value="{{ row.revealed }}" hint-placeholder-val="{{ false }}">
+                    <span style="background: rgba(34,197,94,0.12); color: #4ade80; padding: 3px 10px; border-radius: 999px;">{{ row.secret }}</span>
+                  </sc-if>
+                  <sc-if value="{{ row.hidden }}" hint-placeholder-val="{{ true }}">
+                    <span style="letter-spacing: 0.2em; color: #7d8896;">••••••••••</span>
+                  </sc-if>
+                </span>
+                <span style="text-align: right;">
+                  <sc-if value="{{ row.revealed }}" hint-placeholder-val="{{ false }}">
+                    <span style="font-size: 11.5px; font-weight: 800; color: #ef4444;">{{ row.secs }}s</span>
+                  </sc-if>
+                  <sc-if value="{{ row.hidden }}" hint-placeholder-val="{{ true }}">
+                    <button data-cred="{{ row.id }}" onClick="{{ reveal }}" style="border: 1px solid #1c242e; border-radius: 999px; padding: 6px 15px; background: transparent; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer; color: #e6edf3;" style-hover="background: #182029;">Revelar</button>
+                  </sc-if>
+                </span>
+              </div>
+            </sc-for>
+          </div>
+        </main>
+      </sc-if>
+
+      <sc-if value="{{ isAlerts }}" hint-placeholder-val="{{ false }}">
+        <main style="flex: 1; overflow: auto; padding: 24px 26px 40px;">
+          <div style="display: flex; flex-direction: column; gap: 8px; max-width: 720px;">
+            <sc-for list="{{ alertRows }}" as="al" hint-placeholder-count="2">
+              <div style="display: flex; align-items: center; gap: 14px; background: #0d1218; border: 1px solid #1c242e; border-radius: 13px; padding: 13px 18px;">
+                <span style="width: 9px; height: 9px; border-radius: 999px; background: {{ al.statusColor }}; flex: none;"></span>
+                <div style="flex: 1;">
+                  <div style="font-size: 13.5px; font-weight: 700;">{{ al.name }}</div>
+                  <div style="font-size: 11.5px; color: #7d8896;">{{ al.pillarName }}</div>
+                </div>
+                <span style="font-size: 10.5px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: {{ al.statusColor }};">{{ al.statusLabel }}</span>
+                <button data-id="{{ al.id }}" onClick="{{ openInCanvas }}" style="border: 1px solid #1c242e; border-radius: 999px; padding: 5px 13px; background: transparent; font-family: inherit; font-size: 11.5px; font-weight: 700; cursor: pointer; color: #22c55e;" style-hover="background: rgba(34,197,94,0.1);">Ver no canvas</button>
+              </div>
+            </sc-for>
+            <sc-if value="{{ noAlerts }}" hint-placeholder-val="{{ false }}">
+              <p style="font-size: 13.5px; color: #7d8896;">Tudo online. Nenhum alerta ativo.</p>
+            </sc-if>
+          </div>
+        </main>
+      </sc-if>
+    </div>
+  </div>
+  <footer style="height: 42px; flex: none; background: #0d1218; border-top: 1px solid #1c242e; display: flex; align-items: center; gap: 20px; padding: 0 20px; font-size: 12px; color: #7d8896;">
+    <span style="font-weight: 600;">Canvas: Visão Geral da Topologia</span>
+    <span style="display: flex; align-items: center; gap: 5px;"><span style="width: 8px; height: 8px; border-radius: 999px; background: #22c55e;"></span>Online</span>
+    <span style="display: flex; align-items: center; gap: 5px;"><span style="width: 8px; height: 8px; border-radius: 999px; background: #f59e0b;"></span>Manutenção</span>
+    <span style="display: flex; align-items: center; gap: 5px;"><span style="width: 8px; height: 8px; border-radius: 999px; background: #ef4444;"></span>Offline</span>
+    <span style="display: flex; align-items: center; gap: 5px;"><span style="width: 8px; height: 8px; border-radius: 999px; background: #6b7280;"></span>Desconhecido</span>
+    <span style="border-left: 1px solid #1c242e; padding-left: 20px; font-weight: 700; color: #b9c2cc;">{{ ovNodes }} Ativos</span>
+    <span style="font-weight: 700; color: #b9c2cc;">{{ ovEdges }} Conexões</span>
+    <span style="flex: 1;"></span>
+    <button onClick="{{ exportJson }}" style="border: 1px solid #1c242e; border-radius: 9px; padding: 6px 14px; background: transparent; font-family: inherit; font-size: 12px; font-weight: 700; color: #e6edf3; cursor: pointer; display: flex; align-items: center; gap: 7px;" style-hover="background: #182029;">⭳ Exportar JSON</button>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;revealSeconds&quot;: {&quot;editor&quot;: &quot;int&quot;, &quot;default&quot;: 30, &quot;min&quot;: 5, &quot;max&quot;: 120, &quot;unit&quot;: &quot;s&quot;, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Cofre&quot;}, &quot;simulateHealth&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Canvas&quot;}}">
+class Component extends DCLogic {
+  viewportRef = React.createRef();
+  nameRef = React.createRef();
+  typeRef = React.createRef();
+  pillarRef = React.createRef();
+  state = this.initState();
+
+  initState() {
+    const pillars = [
+      { name: 'Infraestrutura', color: '#22c55e', icon: 'M4 5h16a1 1 0 011 1v3a1 1 0 01-1 1H4a1 1 0 01-1-1V6a1 1 0 011-1zm0 9h16a1 1 0 011 1v3a1 1 0 01-1 1H4a1 1 0 01-1-1v-3a1 1 0 011-1z' },
+      { name: 'Governança', color: '#eab308', icon: 'M8 3h8a1 1 0 011 1v17H7V4a1 1 0 011-1zm2 5h4m-4 4h4m-4 4h2' },
+      { name: 'Segurança', color: '#ef4444', icon: 'M12 3l7 3v5c0 5-3.5 8-7 10-3.5-2-7-5-7-10V6l7-3z' },
+      { name: 'Canais Digitais', color: '#3b82f6', icon: 'M12 3a9 9 0 100 18 9 9 0 000-18zM3 12h18M12 3c2.5 2.5 3.5 5.5 3.5 9s-1 6.5-3.5 9c-2.5-2.5-3.5-5.5-3.5-9s1-6.5 3.5-9z' },
+      { name: 'Sistemas e Aplicações', color: '#a855f7', icon: 'M12 2l8 4.5v9L12 20l-8-4.5v-9L12 2zm0 4.5v9m-8-9l8 4.5 8-4.5' },
+      { name: 'Pessoas e Cultura', color: '#14b8a6', icon: 'M9 11a3 3 0 100-6 3 3 0 000 6zm-6 9a6 6 0 0112 0M17 8a3 3 0 010 6m4 6a6 6 0 00-4-5.5' },
+      { name: 'Dados e Informação', color: '#38bdf8', icon: 'M12 3c4.4 0 8 1.3 8 3s-3.6 3-8 3-8-1.3-8-3 3.6-3 8-3zm-8 3v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6m-16 6c0 1.7 3.6 3 8 3s8-1.3 8-3' },
+      { name: 'Fornecedores e Terceiros', color: '#c084fc', icon: 'M4 12l4-6h8l4 6-8 9-8-9zm4-6l4 6 4-6m-8 6h8' }
+    ];
+    const nodes = [
+      { id: 'srvdc', name: 'SRV-DC-01', pillar: 0, type: 'Servidor', status: 'online', sub: 'Controlador de Domínio Principal', meta: { IP: '192.168.1.10', SO: 'Windows Server 2019', 'Localização': 'Data Center 01', 'Responsável': 'Equipe de Redes', Criticidade: 'Crítica', SLA: '99,9%', 'Custo Anual': 'R$ 12.450,00', Fornecedor: 'Dell', Garantia: '15/07/2026' }, custo: 12450 },
+      { id: 'rt1', name: 'Router Core', pillar: 0, type: 'Router', status: 'online', sub: 'Cisco C9300', meta: { IP: '10.0.0.1', Hardware: 'Cisco C9300', 'Responsável': 'Equipe de Redes' } },
+      { id: 'fw1', name: 'Firewall Perímetro', pillar: 0, type: 'Firewall', status: 'manutencao', sub: 'FortiGate 200F', meta: { IP: '10.0.0.2', Hardware: 'FortiGate 200F', Criticidade: 'Crítica' } },
+      { id: 'sla', name: 'Contrato Datacenter', pillar: 1, type: 'Contrato', status: 'online', sub: 'SLA 99,95%', meta: { SLA: '99,95%', Prazo: '12/2026', 'Responsável': 'M. Costa', Prioridade: 'Alta' } },
+      { id: 'lgpd', name: 'Conformidade LGPD', pillar: 1, type: 'Contrato', status: 'online', sub: 'Jurídico', meta: { 'Responsável': 'Jurídico', Prazo: 'Contínuo', Prioridade: 'Média' } },
+      { id: 'iam', name: 'IAM / Active Directory', pillar: 2, type: 'Serviço', status: 'online', sub: 'corp.ecoit.local', meta: { 'Domínio': 'corp.ecoit.local', Criticidade: 'Crítica', 'Responsável': 'S. Ribeiro' } },
+      { id: 'vpn', name: 'VPN Corporativa', pillar: 2, type: 'Serviço', status: 'offline', sub: 'vpn.ecoit.com.br', meta: { 'Domínio': 'vpn.ecoit.com.br', Criticidade: 'Alta' } },
+      { id: 'site', name: 'Site Institucional', pillar: 3, type: 'Sistema', status: 'online', sub: 'Vercel', meta: { Fornecedor: 'Vercel', Tipo: 'Web' } },
+      { id: 'ecom', name: 'E-commerce', pillar: 3, type: 'Sistema', status: 'online', sub: 'VTEX', meta: { Fornecedor: 'VTEX', 'Custo Anual': 'R$ 48.000,00' }, custo: 48000 },
+      { id: 'erp', name: 'ERP TOTVS', pillar: 4, type: 'Sistema', status: 'online', sub: 'TOTVS', meta: { Fornecedor: 'TOTVS', 'Custo Anual': 'R$ 84.000,00', Tipo: 'ERP' }, custo: 84000 },
+      { id: 'crm', name: 'CRM HubSpot', pillar: 4, type: 'Sistema', status: 'online', sub: 'HubSpot', meta: { Fornecedor: 'HubSpot', 'Custo Anual': 'R$ 36.000,00' }, custo: 36000 },
+      { id: 'trein', name: 'Plataforma de Treinamento', pillar: 5, type: 'Sistema', status: 'online', sub: 'RH / T&D', meta: { 'Responsável': 'RH', Tipo: 'EAD' } },
+      { id: 'hd', name: 'Helpdesk GLPI', pillar: 5, type: 'Sistema', status: 'online', sub: 'ITSM', meta: { Fornecedor: 'GLPI', Tipo: 'ITSM' } },
+      { id: 'bi', name: 'BI / Data Warehouse', pillar: 6, type: 'Sistema', status: 'online', sub: 'Metabase', meta: { Fornecedor: 'Metabase', Tipo: 'Analytics' } },
+      { id: 'bkp', name: 'Backup Veeam', pillar: 6, type: 'Serviço', status: 'online', sub: 'Veeam B&R', meta: { Fornecedor: 'Veeam', 'Custo Anual': 'R$ 22.000,00' }, custo: 22000 },
+      { id: 'isp', name: 'Link ISP Primário', pillar: 7, type: 'Serviço', status: 'online', sub: 'Operadora A', meta: { Fornecedor: 'Operadora A', SLA: '99,5%' } },
+      { id: 'nuvem', name: 'Cloud AWS', pillar: 7, type: 'Serviço', status: 'desconhecido', sub: 'Conta corporativa', meta: { Fornecedor: 'AWS', Tipo: 'IaaS' } }
+    ];
+    this.applyLayout(nodes);
+    const edges = [
+      { from: 'erp', to: 'srvdc' }, { from: 'ecom', to: 'erp' }, { from: 'site', to: 'nuvem' },
+      { from: 'vpn', to: 'fw1' }, { from: 'bi', to: 'erp' }, { from: 'bkp', to: 'srvdc' },
+      { from: 'hd', to: 'iam' }, { from: 'crm', to: 'ecom' }, { from: 'iam', to: 'srvdc' }, { from: 'nuvem', to: 'isp' }
+    ];
+    const creds = [
+      { id: 'c1', asset: 'fw1', label: 'Firewall Perímetro', user: 'admin', secret: 'Fw!83#kePq2' },
+      { id: 'c2', asset: 'iam', label: 'IAM / Active Directory', user: 'CORP\\admsr', secret: 'aD#2026!vLk9' },
+      { id: 'c3', asset: 'srvdc', label: 'SRV-DC-01', user: 'Administrator', secret: 'Srv!Dc#2026' },
+      { id: 'c4', asset: 'erp', label: 'ERP TOTVS', user: 'admin.totvs', secret: 'Tvs@84qWe!' },
+      { id: 'c5', asset: 'bkp', label: 'Backup Veeam', user: 'veeam-svc', secret: 'Bkp$5uY2#p' },
+      { id: 'c6', asset: 'nuvem', label: 'Cloud AWS', user: 'root-account', secret: 'aws-9f3a-77c2-b1d4' }
+    ];
+    return { view: 'canvas', zoom: 0.55, panX: 60, panY: 10, q: '', panelTab: 'info', nodes, pillars, edges, creds, revealed: {}, selectedId: null, connectMode: false, connectFrom: null, addOpen: false };
+  }
+
+  pillarPos(i) {
+    const a = (i / 8) * Math.PI * 2 - Math.PI / 2;
+    return { x: 1000 + 400 * Math.cos(a), y: 700 + 400 * Math.sin(a), a };
+  }
+
+  applyLayout(nodes) {
+    const groups = {};
+    nodes.forEach(n => { (groups[n.pillar] = groups[n.pillar] || []).push(n); });
+    Object.keys(groups).forEach(pi => {
+      const list = groups[pi], p = this.pillarPos(+pi), m = list.length;
+      list.forEach((n, k) => {
+        const ang = p.a + (k - (m - 1) / 2) * 0.16;
+        n.x = 1000 + 620 * Math.cos(ang);
+        n.y = 700 + 620 * Math.sin(ang);
+      });
+    });
+  }
+
+  componentDidMount() {
+    this.mm = e => this.onMove(e);
+    this.mu = () => this.onUp();
+    this.kd = e => { if (e.key === 'Escape') this.setState({ connectMode: false, connectFrom: null, addOpen: false, selectedId: null }); };
+    window.addEventListener('mousemove', this.mm);
+    window.addEventListener('mouseup', this.mu);
+    window.addEventListener('keydown', this.kd);
+    this.revealTimer = setInterval(() => {
+      const keys = Object.keys(this.state.revealed);
+      if (!keys.length) return;
+      const r = {};
+      keys.forEach(k => { const v = this.state.revealed[k] - 1; if (v > 0) r[k] = v; });
+      this.setState({ revealed: r });
+    }, 1000);
+    this.simTimer = setInterval(() => {
+      if (this.props.simulateHealth === false) return;
+      const cand = this.state.nodes.filter(n => n.status === 'online' || n.status === 'manutencao');
+      if (!cand.length) return;
+      const n = cand[Math.floor(Math.random() * cand.length)];
+      if (n.status === 'manutencao') n.status = 'online';
+      else if (Math.random() < 0.35) n.status = 'manutencao';
+      this.forceUpdate();
+    }, 7000);
+    setTimeout(() => this.fit(), 150);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('mousemove', this.mm);
+    window.removeEventListener('mouseup', this.mu);
+    window.removeEventListener('keydown', this.kd);
+    clearInterval(this.revealTimer);
+    clearInterval(this.simTimer);
+  }
+
+  fit() {
+    const el = this.viewportRef.current;
+    if (!el) return;
+    const z = Math.min(el.clientWidth / 2000, el.clientHeight / 1400) * 0.98;
+    this.setState({ zoom: z, panX: (el.clientWidth - 2000 * z) / 2, panY: (el.clientHeight - 1400 * z) / 2 });
+  }
+
+  onMove(e) {
+    if (this.drag) {
+      const d = this.drag, n = this.state.nodes.find(x => x.id === d.id);
+      const dx = e.clientX - d.sx, dy = e.clientY - d.sy;
+      if (Math.abs(dx) + Math.abs(dy) > 4) d.moved = true;
+      if (n && d.moved) { n.x = d.ox + dx / this.state.zoom; n.y = d.oy + dy / this.state.zoom; this.forceUpdate(); }
+    } else if (this.panDrag) {
+      const p = this.panDrag, dx = e.clientX - p.sx, dy = e.clientY - p.sy;
+      if (Math.abs(dx) + Math.abs(dy) > 4) p.moved = true;
+      if (p.moved) this.setState({ panX: p.ox + dx, panY: p.oy + dy });
+    }
+  }
+
+  onUp() {
+    if (this.drag) {
+      const { id, moved } = this.drag;
+      this.drag = null;
+      if (!moved) this.nodeClick(id);
+    }
+    if (this.panDrag) {
+      if (!this.panDrag.moved) this.setState({ selectedId: null, connectMode: false, connectFrom: null });
+      this.panDrag = null;
+    }
+  }
+
+  nodeClick(id) {
+    const s = this.state;
+    if (s.connectMode) {
+      if (!s.connectFrom) { this.setState({ connectFrom: id }); return; }
+      if (id !== s.connectFrom && !s.edges.some(e => (e.from === s.connectFrom && e.to === id) || (e.from === id && e.to === s.connectFrom))) {
+        s.edges.push({ from: s.connectFrom, to: id });
+      }
+      this.setState({ connectMode: false, connectFrom: null, selectedId: id, panelTab: 'conn' });
+    } else {
+      this.setState({ selectedId: id, panelTab: s.selectedId === id ? s.panelTab : 'info' });
+    }
+  }
+
+  zoomAt(factor, cx, cy) {
+    const s = this.state;
+    const z = Math.min(2, Math.max(0.25, s.zoom * factor));
+    this.setState({ zoom: z, panX: cx - (cx - s.panX) * (z / s.zoom), panY: cy - (cy - s.panY) * (z / s.zoom) });
+  }
+
+  curve(x1, y1, x2, y2) {
+    const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
+    if (Math.abs(x2 - x1) > Math.abs(y2 - y1)) return 'M' + x1 + ' ' + y1 + ' C' + mx + ' ' + y1 + ', ' + mx + ' ' + y2 + ', ' + x2 + ' ' + y2;
+    return 'M' + x1 + ' ' + y1 + ' C' + x1 + ' ' + my + ', ' + x2 + ' ' + my + ', ' + x2 + ' ' + y2;
+  }
+
+  renderVals() {
+    const s = this.state;
+    const statusInfo = {
+      online: { label: 'Online', color: '#22c55e', bg: 'rgba(34,197,94,0.12)' },
+      manutencao: { label: 'Manutenção', color: '#f59e0b', bg: 'rgba(245,158,11,0.12)' },
+      offline: { label: 'Offline', color: '#ef4444', bg: 'rgba(239,68,68,0.12)' },
+      desconhecido: { label: 'Desconhecido', color: '#6b7280', bg: 'rgba(107,114,128,0.15)' }
+    };
+    const icons = {
+      Servidor: 'M4 5h16a1 1 0 011 1v3a1 1 0 01-1 1H4a1 1 0 01-1-1V6a1 1 0 011-1zm0 9h16a1 1 0 011 1v3a1 1 0 01-1 1H4a1 1 0 01-1-1v-3a1 1 0 011-1z',
+      Router: 'M4 13h16a2 2 0 012 2v3a2 2 0 01-2 2H4a2 2 0 01-2-2v-3a2 2 0 012-2zm3 0V7m10 6V4',
+      Firewall: 'M12 3l7 3v5c0 5-3.5 8-7 10-3.5-2-7-5-7-10V6l7-3z',
+      Sistema: 'M12 3a9 9 0 100 18 9 9 0 000-18zM3 12h18M12 3c2.5 2.5 3.5 5.5 3.5 9s-1 6.5-3.5 9c-2.5-2.5-3.5-5.5-3.5-9s1-6.5 3.5-9z',
+      'Serviço': 'M13 2L4 14h6l-1 8 9-12h-6l1-8z',
+      Contrato: 'M6 2h8l5 5v15H6V2zm8 0v5h5'
+    };
+    const pp = s.pillars.map((p, i) => this.pillarPos(i));
+    const byId = {};
+    s.nodes.forEach(n => { byId[n.id] = n; });
+    const sel = s.selectedId ? byId[s.selectedId] : null;
+    const ql = s.q.trim().toLowerCase();
+    const vNodes = s.nodes.map(n => {
+      const match = !ql || n.name.toLowerCase().includes(ql) || n.type.toLowerCase().includes(ql) || s.pillars[n.pillar].name.toLowerCase().includes(ql);
+      const hot = n.id === s.selectedId || n.id === s.connectFrom;
+      const pc = s.pillars[n.pillar].color;
+      return {
+        id: n.id, name: n.name,
+        lx: Math.round(n.x - 27), ly: Math.round(n.y - 27),
+        ringColor: hot ? '#22c55e' : pc, iconColor: pc,
+        statusColor: statusInfo[n.status].color,
+        dotAnim: n.status === 'manutencao' ? 'ecoPulse 1.6s ease-in-out infinite' : 'none',
+        iconD: icons[n.type] || icons.Sistema,
+        opacity: match ? 1 : 0.22,
+        shadow: hot ? '0 0 0 5px rgba(34,197,94,0.18), 0 0 22px rgba(34,197,94,0.35)' : '0 0 14px rgba(0,0,0,0.5)'
+      };
+    });
+    const vPillars = s.pillars.map((p, i) => {
+      const list = s.nodes.filter(n => n.pillar === i);
+      return {
+        name: p.name, color: p.color, icon: p.icon, glow: p.color + '33',
+        num: '0' + (i + 1),
+        lx: Math.round(pp[i].x - 99), ly: Math.round(pp[i].y - 58),
+        count: list.length,
+        nOn: list.filter(n => n.status === 'online').length,
+        nMan: list.filter(n => n.status === 'manutencao').length,
+        nOff: list.filter(n => n.status === 'offline' || n.status === 'desconhecido').length
+      };
+    });
+    const spokes = pp.map(p => ({ d: this.curve(1000, 700, Math.round(p.x), Math.round(p.y)) }));
+    const structEdges = s.nodes.map(n => ({ d: this.curve(Math.round(n.x), Math.round(n.y), Math.round(pp[n.pillar].x), Math.round(pp[n.pillar].y)), color: s.pillars[n.pillar].color }));
+    const depPairs = s.edges.filter(e => byId[e.from] && byId[e.to]);
+    const depEdges = depPairs.map(e => ({ d: this.curve(Math.round(byId[e.from].x), Math.round(byId[e.from].y), Math.round(byId[e.to].x), Math.round(byId[e.to].y)) }));
+    const depDots = depPairs.map(e => ({ x: Math.round((byId[e.from].x + byId[e.to].x) / 2), y: Math.round((byId[e.from].y + byId[e.to].y) / 2) }));
+    const sc = 168 / 2000;
+    const miniNodes = s.nodes.map(n => ({ x: Math.round(n.x * sc), y: Math.round(n.y * sc), color: statusInfo[n.status].color }));
+    const miniPillars = pp.map((p, i) => ({ x: Math.round(p.x * sc), y: Math.round(p.y * sc), color: s.pillars[i].color }));
+    const alerts = s.nodes.filter(n => n.status !== 'online');
+    const revealSeconds = this.props.revealSeconds ?? 30;
+    const selCreds = sel ? s.creds.filter(c => c.asset === sel.id).map(c => ({
+      id: c.id, user: c.user, secret: c.secret,
+      revealed: !!s.revealed[c.id], hidden: !s.revealed[c.id], secs: s.revealed[c.id] || 0
+    })) : [];
+    const selDeps = sel ? s.edges.filter(e => e.from === sel.id || e.to === sel.id).map(e => ({
+      dir: e.from === sel.id ? 'Depende de' : 'Suporta',
+      other: e.from === sel.id ? (byId[e.to] ? byId[e.to].name : '?') : (byId[e.from] ? byId[e.from].name : '?')
+    })) : [];
+    const viewTitles = { canvas: 'Canvas Executivo', ativos: 'Ativos', conexoes: 'Conexões', vault: 'Cofre de Senhas', alertas: 'Alertas' };
+    return {
+      isCanvas: s.view === 'canvas', isAtivos: s.view === 'ativos', isConn: s.view === 'conexoes', isVault: s.view === 'vault', isAlerts: s.view === 'alertas',
+      viewTitle: viewTitles[s.view] || 'EcoIT',
+      navBtns: [
+        { view: 'canvas', label: 'Canvas Executivo', icon: 'M12 8a2 2 0 100-4 2 2 0 000 4zm0 12a2 2 0 100-4 2 2 0 000 4zm8-6a2 2 0 100-4 2 2 0 000 4zM4 14a2 2 0 100-4 2 2 0 000 4zm8-6v8M6 12h4m4 0h4' },
+        { view: 'ativos', label: 'Ativos', icon: 'M4 4h7v7H4V4zm9 0h7v7h-7V4zM4 13h7v7H4v-7zm9 0h7v7h-7v-7z' },
+        { view: 'conexoes', label: 'Conexões', icon: 'M6 8a2 2 0 100-4 2 2 0 000 4zm12 12a2 2 0 100-4 2 2 0 000 4zM6 8c0 6 4 10 12 10' },
+        { view: 'vault', label: 'Cofre de Senhas', icon: 'M6 11h12a1 1 0 011 1v8a1 1 0 01-1 1H6a1 1 0 01-1-1v-8a1 1 0 011-1zm3 0V7a3 3 0 016 0v4' },
+        { view: 'alertas', label: 'Alertas', icon: 'M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9zm-4 13a2 2 0 01-4 0', badge: true }
+      ].map(b => ({
+        ...b,
+        badge: !!b.badge && alerts.length > 0, badgeN: String(alerts.length),
+        bg: s.view === b.view ? 'rgba(34,197,94,0.1)' : 'transparent',
+        fg: s.view === b.view ? '#22c55e' : '#b9c2cc',
+        border: s.view === b.view ? 'rgba(34,197,94,0.35)' : 'transparent'
+      })),
+      q: s.q,
+      worldTransform: 'translate(' + s.panX + 'px, ' + s.panY + 'px) scale(' + s.zoom + ')',
+      zoomPct: Math.round(s.zoom * 100) + '%',
+      vNodes, vPillars, spokes, structEdges, depEdges, depDots, miniNodes, miniPillars,
+      ovNodes: String(s.nodes.length), ovEdges: String(s.edges.length), ovAlerts: String(alerts.length),
+      hasAlerts: alerts.length > 0, noAlerts: alerts.length === 0,
+      connectMode: s.connectMode,
+      connectBg: s.connectMode ? '#22c55e' : 'transparent',
+      connectFg: s.connectMode ? '#06130b' : '#b9c2cc',
+      connectHint: s.connectFrom ? 'Agora clique no ativo de destino' : 'Clique no ativo de origem',
+      addOpen: s.addOpen,
+      pillarOpts: s.pillars.map((p, i) => ({ idx: i, name: p.name })),
+      alertRows: alerts.map(n => ({ id: n.id, name: n.name, pillarName: s.pillars[n.pillar].name, statusColor: statusInfo[n.status].color, statusLabel: statusInfo[n.status].label })),
+      assetRows: s.nodes.map(n => ({ id: n.id, name: n.name, type: n.type, pillarName: s.pillars[n.pillar].name, pillarColor: s.pillars[n.pillar].color, statusColor: statusInfo[n.status].color, statusLabel: statusInfo[n.status].label })),
+      connRows: s.edges.map((e, i) => ({ idx: i, from: byId[e.from] ? byId[e.from].name : '?', to: byId[e.to] ? byId[e.to].name : '?' })),
+      noConn: s.edges.length === 0,
+      hasSel: !!sel,
+      selName: sel ? sel.name : '', selSub: sel ? sel.sub : '',
+      selPillarName: sel ? s.pillars[sel.pillar].name : '',
+      selRing: sel ? s.pillars[sel.pillar].color : '#22c55e',
+      selIconD: sel ? (icons[sel.type] || icons.Sistema) : icons.Sistema,
+      selStatusColor: sel ? statusInfo[sel.status].color : '#22c55e',
+      selStatusBg: sel ? statusInfo[sel.status].bg : 'rgba(34,197,94,0.12)',
+      selStatusLabel: sel ? statusInfo[sel.status].label : '',
+      panelTabs: [
+        { tab: 'info', label: 'Geral' }, { tab: 'meta', label: 'Metadados' },
+        { tab: 'conn', label: 'Conexões (' + selDeps.length + ')' }, { tab: 'creds', label: 'Credenciais' }
+      ].map(t => ({ ...t, fg: s.panelTab === t.tab ? '#22c55e' : '#7d8896', line: s.panelTab === t.tab ? '#22c55e' : 'transparent' })),
+      tabInfo: s.panelTab === 'info', tabMeta: s.panelTab === 'meta', tabConn: s.panelTab === 'conn', tabCreds: s.panelTab === 'creds',
+      selMeta: sel ? [{ k: 'Tipo', v: sel.type }].concat(Object.entries(sel.meta).slice(0, 5).map(([k, v]) => ({ k, v }))) : [],
+      selAllMeta: sel ? [{ k: 'Pilar', v: s.pillars[sel.pillar].name }, { k: 'Tipo', v: sel.type }].concat(Object.entries(sel.meta).map(([k, v]) => ({ k, v }))) : [],
+      selStatusOpts: ['online', 'manutencao', 'offline', 'desconhecido'].map(st => {
+        const active = sel && sel.status === st, si = statusInfo[st];
+        return { status: st, label: si.label, bg: active ? si.bg : 'transparent', fg: active ? si.color : '#b9c2cc', border: active ? si.color : '#1c242e' };
+      }),
+      actOffLabel: sel && sel.status === 'offline' ? '⏻ Reativar' : '⏻ Desativar',
+      selDeps, selNoDeps: !!sel && selDeps.length === 0,
+      selCreds, selNoCreds: !!sel && selCreds.length === 0,
+      revealSeconds,
+      vaultRows: s.creds.map(c => ({
+        id: c.id, label: c.label, user: c.user, secret: c.secret,
+        revealed: !!s.revealed[c.id], hidden: !s.revealed[c.id], secs: s.revealed[c.id] || 0
+      })),
+      viewportRef: this.viewportRef, nameRef: this.nameRef, typeRef: this.typeRef, pillarRef: this.pillarRef,
+      onSearch: e => this.setState({ q: e.target.value, view: 'canvas' }),
+      setView: e => this.setState({ view: e.currentTarget.dataset.view, selectedId: null, connectMode: false, connectFrom: null }),
+      goAlerts: () => this.setState({ view: 'alertas' }),
+      setTab: e => this.setState({ panelTab: e.currentTarget.dataset.tab }),
+      actCreds: () => this.setState({ panelTab: 'creds' }),
+      actMeta: () => this.setState({ panelTab: 'meta' }),
+      actConn: () => this.setState({ panelTab: 'conn' }),
+      actToggleOff: () => { if (sel) { sel.status = sel.status === 'offline' ? 'online' : 'offline'; this.forceUpdate(); } },
+      openInCanvas: e => this.setState({ view: 'canvas', selectedId: e.currentTarget.dataset.id, panelTab: 'info' }),
+      removeEdge: e => { const i = +e.currentTarget.dataset.idx; this.setState({ edges: s.edges.filter((x, j) => j !== i) }); },
+      zoomIn: () => { const el = this.viewportRef.current; this.zoomAt(1.2, el ? el.clientWidth / 2 : 400, el ? el.clientHeight / 2 : 300); },
+      zoomOut: () => { const el = this.viewportRef.current; this.zoomAt(1 / 1.2, el ? el.clientWidth / 2 : 400, el ? el.clientHeight / 2 : 300); },
+      fitView: () => this.fit(),
+      onWheel: e => {
+        const rect = this.viewportRef.current.getBoundingClientRect();
+        this.zoomAt(e.deltaY < 0 ? 1.1 : 1 / 1.1, e.clientX - rect.left, e.clientY - rect.top);
+      },
+      onCanvasDown: e => { this.panDrag = { sx: e.clientX, sy: e.clientY, ox: s.panX, oy: s.panY, moved: false }; },
+      onNodeDown: e => {
+        if (e.button !== 0) return;
+        e.stopPropagation();
+        const id = e.currentTarget.dataset.id, n = this.state.nodes.find(x => x.id === id);
+        if (n) this.drag = { id, sx: e.clientX, sy: e.clientY, ox: n.x, oy: n.y, moved: false };
+      },
+      toggleConnect: () => this.setState({ connectMode: !s.connectMode, connectFrom: null }),
+      connectFromSel: () => { if (sel) this.setState({ connectMode: true, connectFrom: sel.id, selectedId: null }); },
+      openAdd: () => this.setState({ addOpen: true, view: 'canvas' }),
+      closeAdd: () => this.setState({ addOpen: false }),
+      submitAdd: () => {
+        const name = (this.nameRef.current?.value || '').trim();
+        if (!name) return;
+        const pi = +(this.pillarRef.current?.value || 0);
+        const p = this.pillarPos(pi);
+        const jitter = () => (Math.random() - 0.5) * 110;
+        const type = this.typeRef.current?.value || 'Sistema';
+        this.state.nodes.push({
+          id: 'n' + Date.now(), name, pillar: pi, type, sub: type,
+          status: 'online', meta: { Criado: 'agora' },
+          x: p.x + (p.x - 1000) * 0.55 + jitter(),
+          y: p.y + (p.y - 700) * 0.55 + jitter()
+        });
+        this.setState({ addOpen: false });
+      },
+      setStatus: e => { if (sel) { sel.status = e.currentTarget.dataset.status; this.forceUpdate(); } },
+      closePanel: () => this.setState({ selectedId: null }),
+      removeSel: () => {
+        if (!sel) return;
+        this.setState({
+          nodes: s.nodes.filter(n => n.id !== sel.id),
+          edges: s.edges.filter(e => e.from !== sel.id && e.to !== sel.id),
+          creds: s.creds.filter(c => c.asset !== sel.id),
+          selectedId: null
+        });
+      },
+      reveal: e => this.setState({ revealed: { ...s.revealed, [e.currentTarget.dataset.cred]: revealSeconds } }),
+      exportJson: () => {
+        const data = {
+          plano: 'Plano Estratégico Central',
+          pilares: s.pillars.map(p => p.name),
+          ativos: s.nodes.map(n => ({ id: n.id, nome: n.name, pilar: s.pillars[n.pillar].name, tipo: n.type, status: n.status, metadados: n.meta, posicao: { x: Math.round(n.x), y: Math.round(n.y) } })),
+          conexoes: s.edges
+        };
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }));
+        a.download = 'ecoit-topologia.json';
+        a.click();
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>
