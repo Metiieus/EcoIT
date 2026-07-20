@@ -5,7 +5,11 @@ export class NodeController {
   async getAll(req: Request, res: Response) {
     try {
       const nodes = await nodeService.getAllNodes();
-      res.json(nodes);
+      const parsedNodes = nodes.map(node => ({
+        ...node,
+        metadata: JSON.parse(node.metadata)
+      }));
+      res.json(parsedNodes);
     } catch (error) {
       res.status(500).json({ error: 'Erro ao procurar os nodes' });
     }
@@ -15,7 +19,10 @@ export class NodeController {
     try {
       const node = await nodeService.getNodeById(req.params.id);
       if (node) {
-        res.json(node);
+        res.json({
+          ...node,
+          metadata: JSON.parse(node.metadata)
+        });
       } else {
         res.status(404).json({ error: 'Node não encontrado' });
       }
